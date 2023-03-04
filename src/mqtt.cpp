@@ -48,7 +48,7 @@ bool sendConnectivityDiscovery()
     doc["pl_off"] = "offline";
 
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/binary_sensor/espresense_%06lx/connectivity/config", CHIPID);
+    String discoveryTopic = Sprintf("%s/binary_sensor/espresense_%06lx/connectivity/config", homeAssistantDiscoveryPrefix.c_str(), CHIPID);
     return pub(discoveryTopic.c_str(), 0, true, buffer);
 }
 
@@ -67,7 +67,7 @@ bool sendTeleBinarySensorDiscovery(const String &name, const String &entityCateg
     if (!devClass.isEmpty()) doc["dev_cla"] = devClass;
 
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/binary_sensor/espresense_%06lx/%s/config", CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/binary_sensor/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(), CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, true, buffer);
 }
 
@@ -87,7 +87,7 @@ bool sendTeleSensorDiscovery(const String &name, const String &entityCategory, c
     if (!devClass.isEmpty()) doc["dev_cla"] = devClass;
 
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/sensor/espresense_%06lx/%s/config", CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/sensor/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(),CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, true, buffer);
 }
 
@@ -107,7 +107,7 @@ bool sendSensorDiscovery(const String &name, const String &entityCategory, const
     doc["frc_upd"] = frcUpdate;
 
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/sensor/espresense_%06lx/%s/config", CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/sensor/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(), CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, true, buffer);
 }
 
@@ -125,7 +125,7 @@ bool sendBinarySensorDiscovery(const String &name, const String &entityCategory,
     if (!devClass.isEmpty()) doc["dev_cla"] = devClass;
 
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/binary_sensor/espresense_%06lx/%s/config", CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/binary_sensor/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(), CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, true, buffer);
 }
 
@@ -143,7 +143,7 @@ bool sendButtonDiscovery(const String &name, const String &entityCategory)
     if (!entityCategory.isEmpty()) doc["entity_category"] = entityCategory;
 
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/button/espresense_%06lx/%s/config", CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/button/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(), CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, true, buffer);
 }
 
@@ -161,7 +161,7 @@ bool sendSwitchDiscovery(const String &name, const String &entityCategory)
     doc["entity_category"] = entityCategory;
 
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/switch/espresense_%06lx/%s/config", CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/switch/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(), CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, true, buffer, 0);
 }
 
@@ -180,7 +180,7 @@ bool sendNumberDiscovery(const String &name, const String &entityCategory)
     if (!entityCategory.isEmpty()) doc["entity_category"] = entityCategory;
 
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/number/espresense_%06lx/%s/config", CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/number/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(), CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, true, buffer);
 }
 
@@ -201,22 +201,23 @@ bool sendLightDiscovery(const String &name, const String &entityCategory, bool r
 
     serializeJson(doc, buffer);
     serializeJson(doc, buffer);
-    String discoveryTopic = Sprintf("homeassistant/light/espresense_%06lx/%s/config", CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/light/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(), CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, true, buffer);
 }
 
 bool sendDeleteDiscovery(const String &domain, const String &name)
 {
     auto slug = slugify(name);
-    String discoveryTopic = Sprintf("homeassistant/%s/espresense_%06lx/%s/config", domain, CHIPID, slug.c_str());
+    String discoveryTopic = Sprintf("%s/%s/espresense_%06lx/%s/config", homeAssistantDiscoveryPrefix.c_str(), domain, CHIPID, slug.c_str());
     return pub(discoveryTopic.c_str(), 0, false, "");
 }
 
-bool alias(const String &alias, const String &id)
+bool alias(const String &alias, const String &id, const String &name = "")
 {
     Serial.printf("Setting %s->%s\n", alias.c_str(), id.c_str());
     doc.clear();
     doc["id"] = id;
+    doc["name"] = name;
     serializeJson(doc, buffer);
     String settingsTopic = CHANNEL + String("/settings/") + alias + "/config";
     return pub(settingsTopic.c_str(), 0, true, buffer);

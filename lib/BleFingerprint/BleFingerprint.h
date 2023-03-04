@@ -39,6 +39,7 @@
 #define ID_TYPE_ITAG short(125)
 #define ID_TYPE_ITRACK short(127)
 #define ID_TYPE_NUT short(128)
+#define ID_TYPE_FLORA short(129)
 #define ID_TYPE_TRACKR short(130)
 #define ID_TYPE_TILE short(135)
 #define ID_TYPE_MEATER short(140)
@@ -132,7 +133,7 @@ private:
     String id, name, disc;
     short int idType = NO_ID_TYPE;
     int rssi = NO_RSSI, newest = NO_RSSI, recent = NO_RSSI, oldest = NO_RSSI;
-    int8_t calRssi = NO_RSSI, mdRssi = NO_RSSI, asRssi = NO_RSSI;
+    int8_t calRssi = NO_RSSI, bcnRssi = NO_RSSI, mdRssi = NO_RSSI, asRssi = NO_RSSI;
     unsigned int qryAttempts = 0, qryDelayMillis = 0;
     float raw = 0, lastReported = 0, temp = 0, humidity = 0;
     unsigned long firstSeenMillis, lastSeenMillis = 0, lastReportedMillis = 0, lastQryMillis = 0;

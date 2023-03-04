@@ -7,6 +7,8 @@ bool sendTelemetry(unsigned int totalSeen, unsigned int totalFpSeen, int unsigne
             pub(statusTopic.c_str(), 0, true, "online")
             && pub((roomsTopic + "/max_distance").c_str(), 0, true, String(BleFingerprintCollection::maxDistance).c_str())
             && pub((roomsTopic + "/absorption").c_str(), 0, true, String(BleFingerprintCollection::absorption).c_str())
+            && pub((roomsTopic + "/tx_ref_rssi").c_str(), 0, true, String(BleFingerprintCollection::txRefRssi).c_str())
+            && pub((roomsTopic + "/rx_adj_rssi").c_str(), 0, true, String(BleFingerprintCollection::rxAdjRssi).c_str())
             && pub((roomsTopic + "/query").c_str(), 0, true, BleFingerprintCollection::query.c_str())
             && pub((roomsTopic + "/include").c_str(), 0, true, BleFingerprintCollection::include.c_str())
             && pub((roomsTopic + "/exclude").c_str(), 0, true, BleFingerprintCollection::exclude.c_str())
@@ -132,6 +134,7 @@ void setupNetwork() {
     mqttUser = AsyncWiFiSettings.pstring("mqtt_user", DEFAULT_MQTT_USER, "Username");
     mqttPass = AsyncWiFiSettings.pstring("mqtt_pass", DEFAULT_MQTT_PASSWORD, "Password");
     discovery = AsyncWiFiSettings.checkbox("discovery", true, "Send to discovery topic");
+    homeAssistantDiscoveryPrefix = AsyncWiFiSettings.string("discovery_prefix", DEFAULT_HA_DISCOVERY_PREFIX, "Home Assistant discovery topic prefix");
     publishTele = AsyncWiFiSettings.checkbox("pub_tele", true, "Send to telemetry topic");
     publishRooms = AsyncWiFiSettings.checkbox("pub_rooms", true, "Send to rooms topic");
     publishDevices = AsyncWiFiSettings.checkbox("pub_devices", true, "Send to devices topic");
@@ -158,9 +161,11 @@ void setupNetwork() {
     BleFingerprintCollection::skipMs = AsyncWiFiSettings.integer("skip_ms", 0, 3000000, DEFAULT_SKIP_MS, "Skip reporting if message age is less that this (in milliseconds)");
 
     AsyncWiFiSettings.heading("Calibration <a href='https://espresense.com/configuration/settings#calibration' target='_blank'>ℹ️</a>", false);
-    BleFingerprintCollection::refRssi = AsyncWiFiSettings.integer("ref_rssi", -100, 100, DEFAULT_REF_RSSI, "Rssi expected from a 0dBm transmitter at 1 meter (NOT used for iBeacons or Eddystone)");
+    BleFingerprintCollection::rxRefRssi = AsyncWiFiSettings.integer("ref_rssi", -100, 100, DEFAULT_RX_REF_RSSI, "Rssi expected from a 0dBm transmitter at 1 meter (NOT used for iBeacons or Eddystone)");
+    BleFingerprintCollection::rxAdjRssi = AsyncWiFiSettings.integer("rx_adj_rssi", -100, 100, 0, "Rssi adjustment for receiver (use only if you know this device has a weak antenna)");
     BleFingerprintCollection::absorption = AsyncWiFiSettings.floating("absorption", -100, 100, DEFAULT_ABSORPTION, "Factor used to account for absorption, reflection, or diffraction");
     BleFingerprintCollection::forgetMs = AsyncWiFiSettings.integer("forget_ms", 0, 3000000, DEFAULT_FORGET_MS, "Forget beacon if not seen for (in milliseconds)");
+    BleFingerprintCollection::txRefRssi = AsyncWiFiSettings.integer("tx_ref_rssi", -100, 100, DEFAULT_TX_REF_RSSI, "Rssi expected from this tx power at 1m (used for node iBeacon)");
 
     GUI::ConnectToWifi();
 
@@ -442,8 +447,6 @@ class MyAdvertisedDeviceCallbacks : public BLEAdvertisedDeviceCallbacks {
 
 void scanTask(void *parameter) {
     NimBLEDevice::init("ESPresense");
-    for (esp_ble_power_type_t i = ESP_BLE_PWR_TYPE_CONN_HDL0; i <= ESP_BLE_PWR_TYPE_CONN_HDL8; i = esp_ble_power_type_t((int)i + 1))
-        NimBLEDevice::setPower(ESP_PWR_LVL_P9, i);
     Enrollment::Setup();
     NimBLEDevice::setMTU(23);
 

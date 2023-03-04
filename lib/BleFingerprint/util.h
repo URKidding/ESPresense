@@ -14,8 +14,10 @@ const BLEUUID miThermUUID(uint16_t(0x181A));
 const BLEUUID trackrUUID((uint16_t)0x0F3E);
 const BLEUUID vanmoofUUID(0x6acc5540, 0xe631, 0x4069, 0x944db8ca7598ad50);
 const BLEUUID tractiveUUID(0x20130001, 0x0719, 0x4b6e, 0xbe5d158ab92fa5a4);
+const BLEUUID espresenseUUID(0xe5ca1ade, 0xf007, 0xba11, 0x0000000000000000);
 
 const BLEUUID nutUUID((uint16_t)0x1803);
+const BLEUUID miFloraUUID((uint16_t)0xfe95);
 
 const BLEUUID fitbitUUID(0xadabfb00, 0x6e7d, 0x4601, 0xbda2bffaa68956ba);
 
@@ -34,8 +36,7 @@ const BLEUUID fwRevChar(uint16_t(0x2A26));
 const BLEUUID hwRevChar(uint16_t(0x2A27));
 const BLEUUID manufChar(uint16_t(0x2A29));
 
-static int median_of_3(int a, int b, int c)
-{
+static int median_of_3(int a, int b, int c) {
     int the_max = max(max(a, b), c);
     int the_min = min(min(a, b), c);
     // unnecessarily clever code

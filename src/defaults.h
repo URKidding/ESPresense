@@ -38,6 +38,8 @@
 // Replace with your MQTT Broker password
 #define DEFAULT_MQTT_PASSWORD ""
 
+#define DEFAULT_HA_DISCOVERY_PREFIX "homeassistant"
+
 // Maximum distance (in meters) to report. Devices that are calculated to be further than this distance in meters will not be reported
 #define DEFAULT_MAX_DISTANCE 16
 
@@ -48,7 +50,8 @@
 #define DEFAULT_INCLUDE ""
 #define DEFAULT_EXCLUDE ""
 
-#define DEFAULT_REF_RSSI (-65)
+#define DEFAULT_RX_REF_RSSI (-65)
+#define DEFAULT_TX_REF_RSSI (-59)
 #define DEFAULT_ABSORPTION (3.5)
 
 #define DEFAULT_FORGET_MS 150000 // Ms to remove fingerprint after not seeing it
